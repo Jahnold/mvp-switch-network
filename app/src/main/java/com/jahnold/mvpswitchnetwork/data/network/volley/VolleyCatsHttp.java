@@ -1,5 +1,6 @@
-package com.jahnold.mvpswitchnetwork.data.repositories;
+package com.jahnold.mvpswitchnetwork.data.network.volley;
 
+import com.android.volley.RequestQueue;
 import com.jahnold.mvpswitchnetwork.data.entities.Cat;
 import com.jahnold.mvpswitchnetwork.data.network.CatsHttp;
 import com.jahnold.mvpswitchnetwork.data.network.Data;
@@ -12,16 +13,16 @@ import rx.Observable;
  * Created by matthewarnold on 16/10/2016.
  */
 
-public class CatsRepository {
+public class VolleyCatsHttp implements CatsHttp {
 
-    private CatsHttp http;
+    private RequestQueue requestQueue;
 
-    public CatsRepository(CatsHttp http) {
-        this.http = http;
+    public VolleyCatsHttp(RequestQueue requestQueue) {
+        this.requestQueue = requestQueue;
     }
 
+    @Override
     public Observable<Data<List<Cat>>> getCats() {
-
-        return http.getCats();
+        return null;
     }
 }
