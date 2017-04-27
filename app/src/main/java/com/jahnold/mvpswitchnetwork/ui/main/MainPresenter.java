@@ -50,4 +50,10 @@ class MainPresenter extends Presenter<MainView> {
                 );
         unsubscribeOnUnbindView(s);
     }
+
+    void tryAgain() {
+
+        clearSubscriptions();
+        subscribeToCats();
+    }
 }

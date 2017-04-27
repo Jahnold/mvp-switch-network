@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">MVP Switch Network</string>
+    <string name="cats_loading">Loading Cats...</string>
+    <string name="cats_error">Oh Noes. There has been an error loading the cats</string>
+    <string name="cats_try_again">Try Again</string>
 </resources>

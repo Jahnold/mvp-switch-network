@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.android.volley.RequestQueue;
 import com.jahnold.mvpswitchnetwork.App;
@@ -18,10 +20,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
     @BindView(R.id.cats_recycler) RecyclerView recycler;
+    @BindView(R.id.cats_error) LinearLayout errorView;
+    @BindView(R.id.cats_loading) LinearLayout loadingView;
 
     private MainPresenter presenter;
     private CatsAdapter adapter;
@@ -77,8 +82,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
         presenter.bindView(this);
     }
 
+    @OnClick(R.id.cats_retry_button)
+    void onRetryClick() {
+
+        presenter.tryAgain();
+    }
+
     @Override
     public void setContentView(List<Cat> cats) {
+
+        recycler.setVisibility(View.VISIBLE);
+        errorView.setVisibility(View.GONE);
+        loadingView.setVisibility(View.GONE);
 
         adapter.setCats(cats);
     }
@@ -86,10 +101,16 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void setLoadingView() {
 
+        recycler.setVisibility(View.GONE);
+        errorView.setVisibility(View.GONE);
+        loadingView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void setErrorView() {
 
+        recycler.setVisibility(View.GONE);
+        errorView.setVisibility(View.VISIBLE);
+        loadingView.setVisibility(View.GONE);
     }
 }
