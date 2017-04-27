@@ -1,5 +1,6 @@
 package com.jahnold.mvpswitchnetwork.ui.main;
 
+import com.jahnold.mvpswitchnetwork.data.network.Data;
 import com.jahnold.mvpswitchnetwork.data.repositories.CatsRepository;
 import com.jahnold.mvpswitchnetwork.ui.common.Presenter;
 
@@ -32,10 +33,13 @@ class MainPresenter extends Presenter<MainView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         catData -> {
-                            if (catData.isSuccessful) {
+                            if (catData.status == Data.LOADING) {
+                                view().setLoadingView();
+                            }
+                            if (catData.status == Data.SUCCESS) {
                                 view().setContentView(catData.result);
                             }
-                            else {
+                            if (catData.status == Data.ERROR) {
                                 view().setErrorView();
                             }
                         },

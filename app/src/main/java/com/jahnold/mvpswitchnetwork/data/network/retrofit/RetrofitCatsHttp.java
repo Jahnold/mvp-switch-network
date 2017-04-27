@@ -29,8 +29,8 @@ public class RetrofitCatsHttp implements CatsHttp {
         return http
                 .getCats()
                 .map(response -> response.isSuccessful()
-                        ? new Data<>(true, response.body(), null)
-                        : new Data<List<Cat>>(false, null, new DataError())
+                        ? new Data<>(Data.SUCCESS, response.body(), null)
+                        : new Data<List<Cat>>(Data.ERROR, null, new DataError(1, "Oh noes...request failed"))
                 );
     }
 }

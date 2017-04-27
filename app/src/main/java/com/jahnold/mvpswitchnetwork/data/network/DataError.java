@@ -6,4 +6,16 @@ package com.jahnold.mvpswitchnetwork.data.network;
 
 public class DataError {
 
+    private int errorCode;
+    private String errorMessage;
+    private Throwable throwable;
+
+    public DataError(Throwable throwable) {
+        this.throwable = throwable;
+    }
+
+    public DataError(int errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 }

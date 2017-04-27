@@ -22,6 +22,8 @@ public class CatsRepository {
 
     public Observable<Data<List<Cat>>> getCats() {
 
-        return http.getCats();
+        return http
+                .getCats()
+                .startWith(new Data<>(Data.LOADING, null, null));
     }
 }

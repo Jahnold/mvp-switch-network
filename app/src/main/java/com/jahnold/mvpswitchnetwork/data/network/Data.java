@@ -6,12 +6,16 @@ package com.jahnold.mvpswitchnetwork.data.network;
 
 public class Data<T> {
 
-    public final boolean isSuccessful;
+    public static final int LOADING = 0;
+    public static final int SUCCESS = 1;
+    public static final int ERROR = 2;
+
+    public final int status;
     public final T result;
     public final DataError error;
 
-    public Data(boolean isSuccessful, T result, DataError error) {
-        this.isSuccessful = isSuccessful;
+    public Data(int status, T result, DataError error) {
+        this.status = status;
         this.result = result;
         this.error = error;
     }
