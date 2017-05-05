@@ -1,7 +1,6 @@
 package com.jahnold.mvpswitchnetwork.ui.main;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,49 +10,41 @@ import android.widget.LinearLayout;
 import com.jahnold.mvpswitchnetwork.App;
 import com.jahnold.mvpswitchnetwork.R;
 import com.jahnold.mvpswitchnetwork.data.entities.Cat;
-import com.jahnold.mvpswitchnetwork.data.network.CatsHttp;
-import com.jahnold.mvpswitchnetwork.data.network.retrofit.RetrofitCatsHttp;
-import com.jahnold.mvpswitchnetwork.data.repositories.CatsRepository;
+import com.jahnold.mvpswitchnetwork.data.network.retrofit.RetrofitCatsHttpInterface;
 
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Retrofit;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class BadTimesActivity extends AppCompatActivity {
 
     @BindView(R.id.cats_recycler) RecyclerView recycler;
     @BindView(R.id.cats_error) LinearLayout errorView;
     @BindView(R.id.cats_loading) LinearLayout loadingView;
 
-    private MainPresenter presenter;
     private CatsAdapter adapter;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        setContentView(R.layout.activity_bad_times);
 
         initRecycler();
-        initPresenter();
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-
-        super.onPostCreate(savedInstanceState);
-        presenter.init();
+        getCatsData();
     }
 
     @Override
     protected void onDestroy() {
 
-        presenter.unbindView(this);
+        subscriptions.clear();
         super.onDestroy();
     }
 
@@ -65,31 +56,38 @@ public class MainActivity extends AppCompatActivity implements MainView {
         recycler.setAdapter(adapter);
     }
 
-    private void initPresenter() {
-
-        // In a real app you would probably want to use a
-        // dependency injection framework to do all this for you
-
-        Retrofit retrofit = App.getInstance().getRetrofit();
-        CatsHttp catsHttp = new RetrofitCatsHttp(retrofit);
-
-//        RequestQueue requestQueue = App.getInstance().getRequestQueue();
-//        CatsHttp catsHttp = new VolleyCatsHttp(requestQueue);
-
-        CatsRepository catsRepository = new CatsRepository(catsHttp);
-
-        presenter = new MainPresenter(catsRepository);
-        presenter.bindView(this);
-    }
-
     @OnClick(R.id.cats_retry_button)
     void onRetryClick() {
 
-        presenter.tryAgain();
+        getCatsData();
     }
 
-    @Override
-    public void setContentView(List<Cat> cats) {
+    private void getCatsData() {
+
+        Retrofit retrofit = App.getInstance().getRetrofit();
+        RetrofitCatsHttpInterface http = retrofit.create(RetrofitCatsHttpInterface.class);
+
+        setLoadingView();
+
+        Subscription s = http
+                .getCats()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            if (result.isSuccessful()) {
+                                setContentView(result.body());
+                            }
+                            else {
+                                setErrorView();
+                            }
+                        },
+                        throwable -> setErrorView()
+                );
+        subscriptions.add(s);
+    }
+
+    private void setContentView(List<Cat> cats) {
 
         recycler.setVisibility(View.VISIBLE);
         errorView.setVisibility(View.GONE);
@@ -98,16 +96,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
         adapter.setCats(cats);
     }
 
-    @Override
-    public void setLoadingView() {
+    private void setLoadingView() {
 
         recycler.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
         loadingView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void setErrorView() {
+    private void setErrorView() {
 
         recycler.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);

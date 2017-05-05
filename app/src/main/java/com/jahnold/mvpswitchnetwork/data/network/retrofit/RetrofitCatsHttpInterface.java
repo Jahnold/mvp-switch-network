@@ -12,7 +12,7 @@ import rx.Observable;
  * Created by matthewarnold on 16/10/2016.
  */
 
-interface RetrofitCatsHttpInterface {
+public interface RetrofitCatsHttpInterface {
 
     @GET("58fcfef20f00004c21513695")
     Observable<Response<List<Cat>>> getCats();
