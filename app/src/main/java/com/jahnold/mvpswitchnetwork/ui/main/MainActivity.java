@@ -13,7 +13,6 @@ import com.jahnold.mvpswitchnetwork.App;
 import com.jahnold.mvpswitchnetwork.R;
 import com.jahnold.mvpswitchnetwork.data.entities.Cat;
 import com.jahnold.mvpswitchnetwork.data.network.CatsHttp;
-import com.jahnold.mvpswitchnetwork.data.network.volley.VolleyCatsHttp;
 import com.jahnold.mvpswitchnetwork.data.repositories.CatsRepository;
 
 import java.util.List;
@@ -69,12 +68,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         // In a real app you would probably want to use a
         // dependency injection framework to do all this for you
-
-//        Retrofit retrofit = App.getInstance().getRetrofit();
-//        CatsHttp catsHttp = new RetrofitCatsHttp(retrofit);
-
         RequestQueue requestQueue = App.getInstance().getRequestQueue();
-        CatsHttp catsHttp = new VolleyCatsHttp(requestQueue);
+        CatsHttp catsHttp = new CatsHttp(requestQueue);
 
         CatsRepository catsRepository = new CatsRepository(catsHttp);
 
