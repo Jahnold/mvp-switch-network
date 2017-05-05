@@ -9,10 +9,7 @@ import android.widget.LinearLayout;
 
 import com.jahnold.mvpswitchnetwork.App;
 import com.jahnold.mvpswitchnetwork.R;
-import com.jahnold.mvpswitchnetwork.data.entities.Cat;
 import com.jahnold.mvpswitchnetwork.data.network.retrofit.RetrofitCatsHttpInterface;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -67,7 +64,9 @@ public class BadTimesActivity extends AppCompatActivity {
         Retrofit retrofit = App.getInstance().getRetrofit();
         RetrofitCatsHttpInterface http = retrofit.create(RetrofitCatsHttpInterface.class);
 
-        setLoadingView();
+        recycler.setVisibility(View.GONE);
+        errorView.setVisibility(View.GONE);
+        loadingView.setVisibility(View.VISIBLE);
 
         Subscription s = http
                 .getCats()
@@ -76,37 +75,28 @@ public class BadTimesActivity extends AppCompatActivity {
                 .subscribe(
                         result -> {
                             if (result.isSuccessful()) {
-                                setContentView(result.body());
+
+                                recycler.setVisibility(View.VISIBLE);
+                                errorView.setVisibility(View.GONE);
+                                loadingView.setVisibility(View.GONE);
+
+                                adapter.setCats(result.body());
                             }
                             else {
-                                setErrorView();
+
+                                recycler.setVisibility(View.GONE);
+                                errorView.setVisibility(View.VISIBLE);
+                                loadingView.setVisibility(View.GONE);
                             }
                         },
-                        throwable -> setErrorView()
+                        throwable -> {
+                            throwable.printStackTrace();
+
+                            recycler.setVisibility(View.GONE);
+                            errorView.setVisibility(View.VISIBLE);
+                            loadingView.setVisibility(View.GONE);
+                        }
                 );
         subscriptions.add(s);
-    }
-
-    private void setContentView(List<Cat> cats) {
-
-        recycler.setVisibility(View.VISIBLE);
-        errorView.setVisibility(View.GONE);
-        loadingView.setVisibility(View.GONE);
-
-        adapter.setCats(cats);
-    }
-
-    private void setLoadingView() {
-
-        recycler.setVisibility(View.GONE);
-        errorView.setVisibility(View.GONE);
-        loadingView.setVisibility(View.VISIBLE);
-    }
-
-    private void setErrorView() {
-
-        recycler.setVisibility(View.GONE);
-        errorView.setVisibility(View.VISIBLE);
-        loadingView.setVisibility(View.GONE);
     }
 }
