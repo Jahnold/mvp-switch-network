@@ -8,12 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.android.volley.RequestQueue;
 import com.jahnold.mvpswitchnetwork.App;
 import com.jahnold.mvpswitchnetwork.R;
 import com.jahnold.mvpswitchnetwork.data.entities.Cat;
 import com.jahnold.mvpswitchnetwork.data.network.CatsHttp;
-import com.jahnold.mvpswitchnetwork.data.network.volley.VolleyCatsHttp;
 import com.jahnold.mvpswitchnetwork.data.repositories.CatsRepository;
 
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -69,13 +68,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         // In a real app you would probably want to use a
         // dependency injection framework to do all this for you
-
-//        Retrofit retrofit = App.getInstance().getRetrofit();
-//        CatsHttp catsHttp = new RetrofitCatsHttp(retrofit);
-
-        RequestQueue requestQueue = App.getInstance().getRequestQueue();
-        CatsHttp catsHttp = new VolleyCatsHttp(requestQueue);
-
+        Retrofit retrofit = App.getInstance().getRetrofit();
+        CatsHttp catsHttp = new CatsHttp(retrofit);
         CatsRepository catsRepository = new CatsRepository(catsHttp);
 
         presenter = new MainPresenter(catsRepository);

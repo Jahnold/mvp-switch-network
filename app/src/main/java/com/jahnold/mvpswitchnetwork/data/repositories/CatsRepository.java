@@ -2,10 +2,10 @@ package com.jahnold.mvpswitchnetwork.data.repositories;
 
 import com.jahnold.mvpswitchnetwork.data.entities.Cat;
 import com.jahnold.mvpswitchnetwork.data.network.CatsHttp;
-import com.jahnold.mvpswitchnetwork.data.network.Data;
 
 import java.util.List;
 
+import retrofit2.Response;
 import rx.Observable;
 
 /**
@@ -20,10 +20,7 @@ public class CatsRepository {
         this.http = http;
     }
 
-    public Observable<Data<List<Cat>>> getCats() {
-
-        return http
-                .getCats()
-                .startWith(new Data<>(Data.LOADING, null, null));
+    public Observable<Response<List<Cat>>> getCats() {
+        return http.getCats();
     }
 }
